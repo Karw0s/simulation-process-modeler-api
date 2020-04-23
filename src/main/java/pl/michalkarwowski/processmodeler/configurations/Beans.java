@@ -1,4 +1,4 @@
-package pl.michalkarwowski.processmodeler;
+package pl.michalkarwowski.processmodeler.configurations;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

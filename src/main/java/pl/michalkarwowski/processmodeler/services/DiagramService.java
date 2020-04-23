@@ -1,5 +1,6 @@
 package pl.michalkarwowski.processmodeler.services;
 
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,8 @@ import pl.michalkarwowski.processmodeler.controllers.DiagramMock;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +43,12 @@ public class DiagramService {
             diagramDTO.setDiagramXML(DiagramMock.diagram2XML);
         }
         return diagramDTO;
+    }
+
+    public byte[] getDiagramImage(Long diagramId) throws IOException {
+        InputStream in = this.getClass().getResourceAsStream(String.format("/static/diagrams_png/diagram%d.png", diagramId));
+        byte[] image = IOUtils.toByteArray(in);
+        return image;
     }
 
 }
