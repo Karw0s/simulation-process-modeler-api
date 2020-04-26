@@ -1,10 +1,10 @@
 package pl.michalkarwowski.processmodeler.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
+@NoArgsConstructor
 @Data
 public class DiagramDetailsDTO {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)

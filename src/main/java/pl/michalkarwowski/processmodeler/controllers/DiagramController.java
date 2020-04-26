@@ -1,6 +1,5 @@
 package pl.michalkarwowski.processmodeler.controllers;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +10,6 @@ import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
 import pl.michalkarwowski.processmodeler.services.DiagramService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -32,7 +30,7 @@ public class DiagramController {
 
     @PostMapping("/diagrams")
     public ResponseEntity<?> createDiagram() {
-        // todo: create diagram in db, send back base diagram
+        // todo: create diagram in db
         return ResponseEntity.ok("saved");
     }
 
@@ -56,7 +54,7 @@ public class DiagramController {
     }
 
     @GetMapping(value = "/diagrams/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)
-    public @ResponseBody byte[] getDiagramImage(@PathVariable Long id) throws IOException {
+    public @ResponseBody byte[] getDiagramImage(@PathVariable Long id) {
         return diagramService.getDiagramImage(id);
     }
 

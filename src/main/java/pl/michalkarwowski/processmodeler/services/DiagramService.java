@@ -1,54 +1,68 @@
 package pl.michalkarwowski.processmodeler.services;
 
-import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.michalkarwowski.processmodeler.controllers.DiagramMock;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
+import pl.michalkarwowski.processmodeler.models.Diagram;
+import pl.michalkarwowski.processmodeler.repositories.DiagramRepository;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiagramService {
 
+    private final DiagramRepository repository;
     private final ModelMapper modelMapper;
 
+    private Type DiagramDetailsDTOType = new TypeToken<List<DiagramDetailsDTO>>() {}.getType();
+
     @Autowired
-    public DiagramService(ModelMapper modelMapper) {
+    public DiagramService(DiagramRepository repository,
+                          ModelMapper modelMapper) {
+        this.repository = repository;
         this.modelMapper = modelMapper;
+
+        modelMapper.typeMap(Diagram.class, DiagramDTO.class).addMappings(mapper -> mapper.map(Diagram::getXml, DiagramDTO::setDiagramXML));
+        // todo: create mapping for image url
+        modelMapper.typeMap(Diagram.class, DiagramDetailsDTO.class).addMappings(mapper -> {
+//            mapper.<String>map(src -> src.getId(), (diagramDetailsDTO, o) -> diagramDetailsDTO.setImageUrl("localhost:8080/diagrams/img"+ o.toString()));
+            mapper.skip(DiagramDetailsDTO::setImageUrl);
+        });
     }
 
     public List<DiagramDetailsDTO> getDiagrams() {
-        List<DiagramDetailsDTO> diagramsDetails = new ArrayList<>();
-        diagramsDetails.add(DiagramDetailsDTO.builder().id(1L).name("Diagram1").imageUrl("diagram1.png").build());
-        diagramsDetails.add(DiagramDetailsDTO.builder().id(2L).name("Diagram2").imageUrl("diagram2.png").build());
-
+        List<Diagram> diagrams = repository.findAll();
+        List<DiagramDetailsDTO> diagramsDetails = modelMapper.map(diagrams, DiagramDetailsDTOType);
         return diagramsDetails;
     }
 
     public DiagramDTO getDiagram(Long diagramId) {
+        Optional<Diagram> diagram = repository.findById(diagramId);
         DiagramDTO diagramDTO = null;
-        if (diagramId == 1) {
-            diagramDTO = new DiagramDTO();
-            diagramDTO.setId(diagramId);
-            diagramDTO.setDiagramXML(DiagramMock.diagram1XML);
-        } else if (diagramId == 2) {
-            diagramDTO = new DiagramDTO();
-            diagramDTO.setId(diagramId);
-            diagramDTO.setDiagramXML(DiagramMock.diagram2XML);
+        if (diagram.isPresent()) {
+            diagramDTO = modelMapper.map(diagram.get(), DiagramDTO.class);
         }
         return diagramDTO;
     }
 
-    public byte[] getDiagramImage(Long diagramId) throws IOException {
-        InputStream in = this.getClass().getResourceAsStream(String.format("/static/diagrams_png/diagram%d.png", diagramId));
-        byte[] image = IOUtils.toByteArray(in);
-        return image;
+    public byte[] getDiagramImage(Long diagramId) {
+
+        Optional<Diagram> diagram = repository.findById(diagramId);
+        return diagram.map(Diagram::getImage).orElse(null);
+//        InputStream in = this.getClass().getResourceAsStream(String.format("/static/diagrams_png/diagram%d.png", diagramId));
+//        byte[] image = IOUtils.toByteArray(in);
+
+//        Optional<Diagram> diagram = repository.findById(diagramId);
+//        if (diagram.isPresent()) {
+//            Diagram d = diagram.get();
+//            d.setImage(image);
+//            repository.save(d);
+//        }
     }
 
 }

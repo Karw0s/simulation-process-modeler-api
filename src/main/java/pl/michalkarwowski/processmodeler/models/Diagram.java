@@ -1,18 +1,21 @@
 package pl.michalkarwowski.processmodeler.models;
 
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @Entity
 public class Diagram {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     private String xml;
-    private String image;
+    @Lob
+    @Type(type = "org.hibernate.type.ImageType")
+    private byte[] image;
 }
