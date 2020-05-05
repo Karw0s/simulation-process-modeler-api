@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.michalkarwowski.processmodeler.dto.DiagramCreateDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
+import pl.michalkarwowski.processmodeler.dto.DiagramUpdateDTO;
 import pl.michalkarwowski.processmodeler.services.DiagramService;
 
 import java.io.IOException;
@@ -28,10 +30,10 @@ public class DiagramController {
         return new ResponseEntity<>(diagramsDetails, HttpStatus.OK);
     }
 
-    @PostMapping("/diagrams")
-    public ResponseEntity<?> createDiagram() {
-        // todo: create diagram in db
-        return ResponseEntity.ok("saved");
+    @PostMapping(value = "/diagrams", consumes = "multipart/form-data")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<?> createDiagram(@ModelAttribute DiagramCreateDTO diagramCreateDTO) throws IOException {
+        return ResponseEntity.ok(diagramService.createDiagram(diagramCreateDTO));
     }
 
     @GetMapping("/diagrams/{id}")
@@ -43,19 +45,21 @@ public class DiagramController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/diagrams/{id}")
-    public ResponseEntity<?> updateDiagram(@PathVariable String id) {
-        return ResponseEntity.ok("updated");
-    }
-
-    @DeleteMapping("/diagrams/{id}")
-    public ResponseEntity<?> deleteDiagram(@PathVariable String id) {
-        return ResponseEntity.ok("deleted");
-    }
-
     @GetMapping(value = "/diagrams/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] getDiagramImage(@PathVariable Long id) {
         return diagramService.getDiagramImage(id);
+    }
+
+    @PutMapping(value = "/diagrams/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<DiagramDTO> updateDiagram(@PathVariable Long id, @ModelAttribute DiagramUpdateDTO diagramUpdateDTO) throws IOException {
+        DiagramDTO diagramDTO = diagramService.updateDiagram(id, diagramUpdateDTO);
+        return ResponseEntity.ok(diagramDTO);
+    }
+
+    @DeleteMapping("/diagrams/{id}")
+    public ResponseEntity<?> deleteDiagram(@PathVariable Long id) {
+        diagramService.deleteDiagram(id);
+        return ResponseEntity.ok("deleted");
     }
 
 }
