@@ -4,11 +4,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.michalkarwowski.processmodeler.dto.DiagramCreateDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
+import pl.michalkarwowski.processmodeler.dto.DiagramUpdateDTO;
 import pl.michalkarwowski.processmodeler.models.Diagram;
 import pl.michalkarwowski.processmodeler.repositories.DiagramRepository;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
@@ -33,12 +36,19 @@ public class DiagramService {
 //            mapper.<String>map(src -> src.getId(), (diagramDetailsDTO, o) -> diagramDetailsDTO.setImageUrl("localhost:8080/diagrams/img"+ o.toString()));
             mapper.skip(DiagramDetailsDTO::setImageUrl);
         });
+        modelMapper.typeMap(DiagramCreateDTO.class, Diagram.class).addMappings(mapper -> mapper.skip(Diagram::setImage));
     }
 
     public List<DiagramDetailsDTO> getDiagrams() {
         List<Diagram> diagrams = repository.findAll();
-        List<DiagramDetailsDTO> diagramsDetails = modelMapper.map(diagrams, DiagramDetailsDTOType);
-        return diagramsDetails;
+        return modelMapper.map(diagrams, DiagramDetailsDTOType);
+    }
+
+    public DiagramDTO createDiagram(DiagramCreateDTO diagramCreateDTO) throws IOException {
+        Diagram diagram = modelMapper.map(diagramCreateDTO, Diagram.class);
+        diagram.setImage(diagramCreateDTO.getImage().getBytes());
+        Diagram save = repository.save(diagram);
+        return  modelMapper.map(save, DiagramDTO.class);
     }
 
     public DiagramDTO getDiagram(Long diagramId) {
@@ -54,15 +64,22 @@ public class DiagramService {
 
         Optional<Diagram> diagram = repository.findById(diagramId);
         return diagram.map(Diagram::getImage).orElse(null);
-//        InputStream in = this.getClass().getResourceAsStream(String.format("/static/diagrams_png/diagram%d.png", diagramId));
-//        byte[] image = IOUtils.toByteArray(in);
-
-//        Optional<Diagram> diagram = repository.findById(diagramId);
-//        if (diagram.isPresent()) {
-//            Diagram d = diagram.get();
-//            d.setImage(image);
-//            repository.save(d);
-//        }
     }
 
+    public DiagramDTO updateDiagram(Long diagramId, DiagramUpdateDTO diagramUpdateDTO) throws IOException {
+        Optional<Diagram> diagramOptional = repository.findById(diagramId);
+        if (diagramOptional.isPresent()) {
+            Diagram diagram = diagramOptional.get();
+            diagram.setXml(diagramUpdateDTO.getXml());
+            diagram.setName(diagramUpdateDTO.getName());
+            diagram.setImage(diagramUpdateDTO.getImage().getBytes());
+            Diagram save = repository.save(diagram);
+            return modelMapper.map(save, DiagramDTO.class);
+        }
+        return null;
+    }
+
+    public void deleteDiagram(Long diagramId) {
+        repository.deleteById(diagramId);
+    }
 }

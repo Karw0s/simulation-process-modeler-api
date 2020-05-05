@@ -2,11 +2,12 @@ package pl.michalkarwowski.processmodeler.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 @Data
-public class DiagramDTO {
-    private Long id;
+public class DiagramCreateDTO {
     private String name;
-    private String DiagramXML;
+    private String xml;
+    private MultipartFile image;
 }
