@@ -7,5 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class DiagramDTO {
     private Long id;
+    private String name;
     private String DiagramXML;
 }

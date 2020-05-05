@@ -4,7 +4,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import pl.michalkarwowski.processmodeler.dto.DiagramCreateDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
@@ -45,11 +44,11 @@ public class DiagramService {
         return modelMapper.map(diagrams, DiagramDetailsDTOType);
     }
 
-    public Long createDiagram(DiagramCreateDTO diagramCreateDTO) throws IOException {
+    public DiagramDTO createDiagram(DiagramCreateDTO diagramCreateDTO) throws IOException {
         Diagram diagram = modelMapper.map(diagramCreateDTO, Diagram.class);
         diagram.setImage(diagramCreateDTO.getImage().getBytes());
         Diagram save = repository.save(diagram);
-        return save.getId();
+        return  modelMapper.map(save, DiagramDTO.class);
     }
 
     public DiagramDTO getDiagram(Long diagramId) {
@@ -65,15 +64,6 @@ public class DiagramService {
 
         Optional<Diagram> diagram = repository.findById(diagramId);
         return diagram.map(Diagram::getImage).orElse(null);
-//        InputStream in = this.getClass().getResourceAsStream(String.format("/static/diagrams_png/diagram%d.png", diagramId));
-//        byte[] image = IOUtils.toByteArray(in);
-
-//        Optional<Diagram> diagram = repository.findById(diagramId);
-//        if (diagram.isPresent()) {
-//            Diagram d = diagram.get();
-//            d.setImage(image);
-//            repository.save(d);
-//        }
     }
 
     public DiagramDTO updateDiagram(Long diagramId, DiagramUpdateDTO diagramUpdateDTO) throws IOException {

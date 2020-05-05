@@ -31,9 +31,8 @@ public class DiagramController {
     }
 
     @PostMapping(value = "/diagrams", consumes = "multipart/form-data")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?> createDiagram(@ModelAttribute DiagramCreateDTO diagramCreateDTO) throws IOException {
-        return ResponseEntity.ok(diagramService.createDiagram(diagramCreateDTO));
+    public ResponseEntity<DiagramDTO> createDiagram(@ModelAttribute DiagramCreateDTO diagramCreateDTO) throws IOException {
+        return new ResponseEntity<>(diagramService.createDiagram(diagramCreateDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/diagrams/{id}")
@@ -59,7 +58,7 @@ public class DiagramController {
     @DeleteMapping("/diagrams/{id}")
     public ResponseEntity<?> deleteDiagram(@PathVariable Long id) {
         diagramService.deleteDiagram(id);
-        return ResponseEntity.ok("deleted");
+        return ResponseEntity.ok().build();
     }
 
 }
