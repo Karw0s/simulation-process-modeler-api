@@ -4,17 +4,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.michalkarwowski.processmodeler.repositories.DiagramRepository;
-import pl.michalkarwowski.processmodeler.repositories.SimulationRepository;
+import pl.michalkarwowski.processmodeler.repositories.SimulationPropertiesRepository;
 
 @Service
 public class SimulationService {
 
-    private final SimulationRepository simRepository;
+    private final SimulationPropertiesRepository simRepository;
     private final DiagramRepository diagramRepository;
     private final ModelMapper mapper;
 
     @Autowired
-    public SimulationService(SimulationRepository simRepository,
+    public SimulationService(SimulationPropertiesRepository simRepository,
                              DiagramRepository diagramRepository,
                              ModelMapper mapper) {
         this.simRepository = simRepository;
