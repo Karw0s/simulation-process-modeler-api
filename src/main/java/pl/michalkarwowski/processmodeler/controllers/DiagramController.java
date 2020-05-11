@@ -9,9 +9,6 @@ import pl.michalkarwowski.processmodeler.dto.DiagramCreateDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramDetailsDTO;
 import pl.michalkarwowski.processmodeler.dto.DiagramUpdateDTO;
-import pl.michalkarwowski.processmodeler.dto.SimProperties.SimPropertiesCreateDTO;
-import pl.michalkarwowski.processmodeler.dto.SimProperties.SimulationPropertiesListItemDTO;
-import pl.michalkarwowski.processmodeler.models.SimulationProperties;
 import pl.michalkarwowski.processmodeler.services.DiagramService;
 
 import java.io.IOException;
@@ -63,30 +60,4 @@ public class DiagramController {
         diagramService.deleteDiagram(id);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/diagrams/{id}/simProperties")
-    public ResponseEntity<List<SimulationPropertiesListItemDTO>> getDiagramSimPropertiesList(@PathVariable Long id) {
-        return ResponseEntity.ok(diagramService.getDiagramSimulationProperties(id));
-    }
-
-    @GetMapping("/simProperties/{id}")
-    public ResponseEntity<?> getSimulationProperties(@PathVariable Long id) {
-        return ResponseEntity.ok(diagramService.getSimProperties(id));
-    }
-
-    @PostMapping("/diagrams/{id}/simProperties")
-    public ResponseEntity<SimulationProperties> getDiagramSimPropertiesList(@PathVariable Long id, @RequestBody SimPropertiesCreateDTO simPropertiesCreateDTO) {
-        return ResponseEntity.ok(diagramService.addSimulationProperties(id, simPropertiesCreateDTO));
-    }
-
-    @PutMapping("/simProperties/{id}")
-    public ResponseEntity<SimulationProperties> updateDiagramSimProperties(@PathVariable Long id, @RequestBody SimPropertiesCreateDTO simPropertiesCreateDTO) {
-        return ResponseEntity.ok(diagramService.updateSimProperties(id, simPropertiesCreateDTO));
-    }
-    @DeleteMapping("/simProperties/{id}")
-    public ResponseEntity<?> deleteSimulationProperties(@PathVariable Long id) {
-        diagramService.deleteSimProperties(id);
-        return ResponseEntity.ok().build();
-    }
-
 }
