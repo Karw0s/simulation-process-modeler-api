@@ -18,6 +18,7 @@ import pl.michalkarwowski.processmodeler.repositories.SimulationPropertiesReposi
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +51,7 @@ public class DiagramService {
 
     public List<DiagramDetailsDTO> getDiagrams() {
         List<Diagram> diagrams = repository.findAll();
+        diagrams.sort(Comparator.comparing(Diagram::getId));
         return modelMapper.map(diagrams, DiagramDetailsDTOType);
     }
 
@@ -102,10 +104,9 @@ public class DiagramService {
             Diagram dbDiagram = diagram.get();
             SimulationProperties simulationProperties = modelMapper.map(simPropertiesCreateDTO, SimulationProperties.class);
             simulationProperties.setDiagram(dbDiagram);
-            SimulationProperties save = simPropRepository.save(simulationProperties);
 //            dbDiagram.getSimulationsProperties().add(simulationProperties);
 //            repository.save(dbDiagram);
-            return save;
+            return simPropRepository.save(simulationProperties);
         } else {
             return null;
         }
