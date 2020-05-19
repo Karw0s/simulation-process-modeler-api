@@ -60,5 +60,4 @@ public class DiagramController {
         diagramService.deleteDiagram(id);
         return ResponseEntity.ok().build();
     }
-
 }
